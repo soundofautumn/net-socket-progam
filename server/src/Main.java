@@ -9,16 +9,16 @@ public class Main {
     public static void main(String[] args) {
         final List<Server> servers = List.of(new TCPServer(), new UDPServer());
         final Processor processor = new DefaultServerProcessor();
-        for (Server server : servers) {
+        for (final Server server : servers) {
             server.parseArgs(args);
             server.setProcessor(processor);
             if (!server.start()) {
                 System.err.println("Failed to start server");
             }
         }
-        Scanner scanner = new Scanner(System.in);
+        final Scanner scanner = new Scanner(System.in);
         while (true) {
-            String command = scanner.nextLine();
+            final String command = scanner.nextLine();
             if (command.equals("exit")) {
                 break;
             }
@@ -26,7 +26,7 @@ public class Main {
                 System.out.println(processor.getOnlineClients());
             }
             if (command.startsWith("kick")) {
-                String[] split = command.split(" ");
+                final String[] split = command.split(" ");
                 if (split.length == 2) {
                     if (processor.kick(split[1])) {
                         System.out.println("Client kicked");
@@ -36,7 +36,7 @@ public class Main {
                 }
             }
         }
-        for (Server server : servers) {
+        for (final Server server : servers) {
             if (!server.stop()) {
                 System.err.println("Failed to stop server");
             }

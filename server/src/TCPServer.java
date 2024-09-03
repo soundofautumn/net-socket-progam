@@ -16,7 +16,7 @@ public class TCPServer extends AbstractServer {
 
     private ServerSocket serverSocket;
 
-    private List<Socket> clients = new CopyOnWriteArrayList<>();
+    private final List<Socket> clients = new CopyOnWriteArrayList<>();
 
     private final ThreadPoolExecutor executor = new ThreadPoolExecutor(
             10,
