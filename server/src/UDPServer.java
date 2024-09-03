@@ -2,8 +2,6 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author SoundOfAutumn
@@ -25,8 +23,11 @@ public class UDPServer extends AbstractServer {
 
     @Override
     public boolean stop() {
+        if (!super.stop()) {
+            return false;
+        }
         socket.close();
-        return super.stop();
+        return true;
     }
 
     @Override
@@ -40,7 +41,6 @@ public class UDPServer extends AbstractServer {
             final DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
             socket.receive(receivePacket);
             final String client = receivePacket.getAddress().getHostAddress() + ":" + receivePacket.getPort();
-            System.out.println("UDP Client connected: " + client);
             final String receiveMsg = new String(receivePacket.getData(), 0, receivePacket.getLength());
             System.out.println(client + " -> " + receiveMsg);
             final String sendMsg = getProcessor().process(receiveMsg);
