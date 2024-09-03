@@ -1,0 +1,14 @@
+import java.util.Collection;
+
+/**
+ * @author SoundOfAutumn
+ * @date 2024/9/2 16:17
+ */
+public interface Processor {
+
+    String process(String message);
+
+    Collection<String> getOnlineClients();
+
+    boolean kick(String client);
+}
