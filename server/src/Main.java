@@ -11,9 +11,8 @@ public class Main {
         final Processor processor = new DefaultServerProcessor();
         for (Server server : servers) {
             server.parseArgs(args);
-            if (server.start()) {
-                new Thread(() -> server.run(processor)).start();
-            } else {
+            server.setProcessor(processor);
+            if (!server.start()) {
                 System.err.println("Failed to start server");
             }
         }

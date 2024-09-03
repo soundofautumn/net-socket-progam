@@ -1,7 +1,10 @@
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -9,53 +12,42 @@ import java.util.concurrent.TimeUnit;
  * @author SoundOfAutumn
  * @date 2024/9/2 16:16
  */
-public class TCPServer implements Server {
-
-    private int port = 8080;
+public class TCPServer extends AbstractServer {
 
     private ServerSocket serverSocket;
 
-    private Processor processor;
+    private List<Socket> clients = new CopyOnWriteArrayList<>();
 
-    private ThreadPoolExecutor executor;
-
-    private volatile boolean isRunning = false;
-
-    @Override
-    public void setPort(int port) {
-        this.port = port;
-    }
+    private final ThreadPoolExecutor executor = new ThreadPoolExecutor(
+            10,
+            10,
+            1,
+            TimeUnit.SECONDS,
+            new ArrayBlockingQueue<>(10),
+            r -> new Thread(r, "TCP-Server-Thread"),
+            new ThreadPoolExecutor.DiscardPolicy()
+    );
 
     @Override
     public boolean start() {
         try {
-            serverSocket = new ServerSocket(port);
+            serverSocket = new ServerSocket(getPort());
         } catch (IOException e) {
             return false;
         }
-        executor = new ThreadPoolExecutor(
-                10,
-                10,
-                1,
-                TimeUnit.SECONDS,
-                new ArrayBlockingQueue<>(10),
-                r -> new Thread(r, "TCP-Server-Thread"),
-                new ThreadPoolExecutor.DiscardPolicy()
-        );
-        System.out.println("TCP Server started on port: " + port);
-        isRunning = true;
-        return true;
+        return super.start();
     }
 
     @Override
     public boolean stop() {
-        try {
-            serverSocket.close();
-        } catch (IOException e) {
+        if (!super.stop()) {
             return false;
         }
-        isRunning = false;
+
         try {
+            for (Socket client : clients) {
+                client.close();
+            }
             serverSocket.close();
         } catch (IOException e) {
             return false;
@@ -63,36 +55,39 @@ public class TCPServer implements Server {
         executor.shutdown();
         boolean isTerminated;
         try {
-            isTerminated = executor.awaitTermination(1, TimeUnit.MINUTES);
+            isTerminated = executor.awaitTermination(1, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        if (!isTerminated) {
-            System.err.println("Failed to stop server");
             return false;
         }
-        System.out.println("TCP Server stopped.");
-        serverSocket = null;
-        executor = null;
+        if (!isTerminated) {
+            executor.shutdownNow();
+        }
         return true;
     }
 
-    private void accept() {
+    @Override
+    public String getProtocol() {
+        return "TCP";
+    }
+
+    @Override
+    void accept() {
         try {
             final Socket socket = serverSocket.accept();
             final String client = socket.getInetAddress().getHostAddress() + ":" + socket.getPort();
+            clients.add(socket);
             System.out.println("TCP Client connected: " + client);
             executor.execute(() -> {
                 try {
                     final BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     final BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-                    while (isRunning) {
+                    while (isRunning()) {
                         final String receiveMsg = in.readLine();
                         if (receiveMsg == null) {
                             break;
                         }
                         System.out.println(client + " -> " + receiveMsg);
-                        final String sendMsg = processor.process(receiveMsg);
+                        final String sendMsg = getProcessor().process(receiveMsg);
                         System.out.println(client + " <- " + sendMsg);
                         out.write(sendMsg);
                         out.newLine();
@@ -101,26 +96,17 @@ public class TCPServer implements Server {
                     socket.close();
                     System.out.println("TCP Client disconnected: " + client);
                 } catch (IOException e) {
-                    if (!isRunning) {
+                    if (!isRunning()) {
                         return;
                     }
                     throw new RuntimeException(e);
                 }
             });
         } catch (IOException e) {
-            if (!isRunning) {
+            if (!isRunning()) {
                 return;
             }
             throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public void run(Processor processor) {
-        this.processor = processor;
-        System.out.println("TCP Server is running...");
-        while (isRunning) {
-            accept();
         }
     }
 }
