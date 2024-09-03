@@ -19,12 +19,12 @@ public class Main {
         checkArgs(args);
         Client client = null;
         if (args.length < 1) {
-            System.out.println("Usage: java -jar client.jar [protocol] [-h host] [-p port]");
+            System.out.println("Usage: java -jar client.jar <protocol> [-h host] [-p port]");
             System.exit(1);
         }
-        if (args[0].equals("udp")) {
+        if (args[0].equalsIgnoreCase("udp")) {
             client = new UDPClient();
-        } else if (args[0].equals("tcp")) {
+        } else if (args[0].equalsIgnoreCase("tcp")) {
             client = new TCPClient();
         } else {
             System.out.println("Invalid protocol: " + args[0]);

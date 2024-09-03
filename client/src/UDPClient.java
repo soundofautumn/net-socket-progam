@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketException;
 
 /**
  * @author SoundOfAutumn
@@ -15,6 +16,7 @@ public class UDPClient implements Client {
 
     private volatile boolean isRunning = false;
 
+    DatagramSocket socket;
 
     @Override
     public void setAddress(String address) {
@@ -29,12 +31,21 @@ public class UDPClient implements Client {
     @Override
     public boolean connect() {
         isRunning = true;
+        try {
+            socket = new DatagramSocket();
+        } catch (SocketException e) {
+            return false;
+        }
         return true;
     }
 
     @Override
     public boolean close() {
         isRunning = false;
+        if (socket != null) {
+            socket.close();
+        }
+        socket = null;
         return true;
     }
 
@@ -47,14 +58,12 @@ public class UDPClient implements Client {
         try {
             final byte[] sendBuffer = sendMsg.getBytes();
             final DatagramPacket sendPacket = new DatagramPacket(sendBuffer, sendBuffer.length, InetAddress.getByName(address), port);
-            final DatagramSocket sendSocket = new DatagramSocket();
-            sendSocket.send(sendPacket);
+            socket.send(sendPacket);
             final byte[] receiveBuffer = new byte[1024];
             final DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
-            sendSocket.receive(receivePacket);
+            socket.receive(receivePacket);
             final String receiveMsg = new String(receivePacket.getData(), 0, receivePacket.getLength());
             processor.receive(receiveMsg);
-            sendSocket.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

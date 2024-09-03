@@ -47,10 +47,10 @@ public class TCPClient implements Client {
         try {
             socket.close();
             isRunning = false;
-            return true;
         } catch (IOException e) {
             return false;
         }
+        return true;
     }
 
     private void process(Processor processor) {
@@ -70,6 +70,10 @@ public class TCPClient implements Client {
             }
             processor.receive(receiveMsg);
         } catch (IOException e) {
+            if (socket.isClosed()) {
+                isRunning = false;
+                return;
+            }
             throw new RuntimeException(e);
         }
     }
