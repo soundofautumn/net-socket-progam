@@ -45,7 +45,10 @@ public class DefaultServerProcessor implements ServerProcessor {
             }
             String username = split[1];
             String echo = split[2];
-            if (!onlineClients.containsKey(username)) {
+            if (onlineClients.get(username) == null) {
+                return "please login first";
+            }
+            if (!onlineClients.get(username).equals(client)) {
                 return "please login first";
             }
             return echo;
