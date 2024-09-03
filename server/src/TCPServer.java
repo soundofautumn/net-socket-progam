@@ -86,7 +86,7 @@ public class TCPServer extends AbstractServer {
                             break;
                         }
                         System.out.println(client + " -> " + receiveMsg);
-                        final String sendMsg = getProcessor().process(receiveMsg);
+                        final String sendMsg = getProcessor().process(client, receiveMsg);
                         System.out.println(client + " <- " + sendMsg);
                         out.write(sendMsg);
                         out.newLine();
@@ -99,6 +99,8 @@ public class TCPServer extends AbstractServer {
                         return;
                     }
                     throw new RuntimeException(e);
+                } finally {
+                    getProcessor().kick(client);
                 }
             });
         } catch (IOException e) {

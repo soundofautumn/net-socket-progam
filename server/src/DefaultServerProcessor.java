@@ -1,4 +1,5 @@
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -9,7 +10,7 @@ public class DefaultServerProcessor implements ServerProcessor {
 
     private static final Map<String, String> userMap;
 
-    private static final List<String> onlineClients = new CopyOnWriteArrayList<>();
+    private static final Map<String, String> onlineClients = new ConcurrentHashMap<>();
 
     static {
         userMap = Map.of(
@@ -19,7 +20,7 @@ public class DefaultServerProcessor implements ServerProcessor {
     }
 
     @Override
-    public String process(String message) {
+    public String process(String client, String message) {
         if (message.startsWith("login")) {
             String[] split = message.split(" ");
             if (split.length != 3) {
@@ -27,11 +28,11 @@ public class DefaultServerProcessor implements ServerProcessor {
             }
             String username = split[1];
             String password = split[2];
-            if (onlineClients.contains(username)) {
+            if (onlineClients.containsKey(username)) {
                 return "already login";
             }
             if (userMap.containsKey(username) && userMap.get(username).equals(password)) {
-                onlineClients.add(username);
+                onlineClients.put(username, client);
                 return "login success";
             } else {
                 return "login failed";
@@ -44,7 +45,7 @@ public class DefaultServerProcessor implements ServerProcessor {
             }
             String username = split[1];
             String echo = split[2];
-            if (!onlineClients.contains(username)) {
+            if (!onlineClients.containsKey(username)) {
                 return "please login first";
             }
             return echo;
@@ -54,11 +55,11 @@ public class DefaultServerProcessor implements ServerProcessor {
 
     @Override
     public Collection<String> getOnlineClients() {
-        return onlineClients;
+        return onlineClients.keySet();
     }
 
     @Override
     public boolean kick(String client) {
-        return onlineClients.remove(client);
+        return onlineClients.remove(client) != null;
     }
 }

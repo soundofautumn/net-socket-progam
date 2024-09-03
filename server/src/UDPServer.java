@@ -43,7 +43,7 @@ public class UDPServer extends AbstractServer {
             final String client = receivePacket.getAddress().getHostAddress() + ":" + receivePacket.getPort();
             final String receiveMsg = new String(receivePacket.getData(), 0, receivePacket.getLength());
             System.out.println(client + " -> " + receiveMsg);
-            final String sendMsg = getProcessor().process(receiveMsg);
+            final String sendMsg = getProcessor().process(client, receiveMsg);
             System.out.println(client + " <- " + sendMsg);
             final byte[] sendBuffer = sendMsg.getBytes();
             final DatagramPacket sendPacket = new DatagramPacket(sendBuffer, sendBuffer.length, receivePacket.getAddress(), receivePacket.getPort());

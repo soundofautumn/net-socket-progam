@@ -6,7 +6,7 @@ import java.util.Collection;
  */
 public interface ServerProcessor {
 
-    String process(String message);
+    String process(String client, String message);
 
     Collection<String> getOnlineClients();
 
