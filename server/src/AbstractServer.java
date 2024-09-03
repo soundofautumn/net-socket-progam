@@ -6,7 +6,7 @@ public abstract class AbstractServer implements Server {
 
     private int port = 8080;
 
-    private Processor processor;
+    private ServerProcessor processor;
 
     private volatile boolean isRunning = false;
 
@@ -20,12 +20,12 @@ public abstract class AbstractServer implements Server {
         return port;
     }
 
-    Processor getProcessor() {
+    ServerProcessor getProcessor() {
         return processor;
     }
 
     @Override
-    public void setProcessor(Processor processor) {
+    public void setProcessor(ServerProcessor processor) {
         this.processor = processor;
     }
 

@@ -49,7 +49,7 @@ public class UDPClient implements Client {
         return true;
     }
 
-    private void process(Processor processor) {
+    private void process(ClientProcessor processor) {
         final String sendMsg = processor.send();
         if (sendMsg == null) {
             isRunning = false;
@@ -70,7 +70,7 @@ public class UDPClient implements Client {
     }
 
     @Override
-    public void run(Processor processor) {
+    public void run(ClientProcessor processor) {
         while (isRunning) {
             process(processor);
         }

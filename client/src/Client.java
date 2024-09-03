@@ -8,7 +8,7 @@ public interface Client {
 
     boolean close();
 
-    void run(Processor processor);
+    void run(ClientProcessor processor);
 
     void setAddress(String address);
 

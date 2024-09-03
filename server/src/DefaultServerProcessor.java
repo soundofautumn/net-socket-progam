@@ -5,7 +5,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author SoundOfAutumn
  * @date 2024/9/2 17:55
  */
-public class DefaultServerProcessor implements Processor {
+public class DefaultServerProcessor implements ServerProcessor {
 
     private static final Map<String, String> userMap;
 

@@ -4,7 +4,7 @@ import java.util.Scanner;
  * @author SoundOfAutumn
  * @date 2024/9/2 17:54
  */
-public class DefaultClientProcessor implements Processor {
+public class DefaultClientProcessor implements ClientProcessor {
 
     private boolean isLogin = false;
 

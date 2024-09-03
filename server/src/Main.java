@@ -8,7 +8,7 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         final List<Server> servers = List.of(new TCPServer(), new UDPServer());
-        final Processor processor = new DefaultServerProcessor();
+        final ServerProcessor processor = new DefaultServerProcessor();
         for (final Server server : servers) {
             server.parseArgs(args);
             server.setProcessor(processor);

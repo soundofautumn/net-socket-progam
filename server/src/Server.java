@@ -16,7 +16,7 @@ public interface Server {
         }
     }
 
-    void setProcessor(Processor processor);
+    void setProcessor(ServerProcessor processor);
 
     boolean start();
 
