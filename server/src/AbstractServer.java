@@ -38,7 +38,7 @@ public abstract class AbstractServer implements Server {
             while (isRunning) {
                 accept();
             }
-        }).start();
+        }, getProtocol() + "-Server-Main-Thread").start();
         isRunning = true;
         return true;
     }
