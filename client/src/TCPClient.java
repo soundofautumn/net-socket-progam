@@ -1,4 +1,5 @@
 import java.io.*;
+import java.net.InetAddress;
 import java.net.Socket;
 
 /**
@@ -32,7 +33,7 @@ public class TCPClient implements Client {
     @Override
     public boolean connect() {
         try {
-            socket = new Socket(address, port);
+            socket = new Socket(InetAddress.getByName(address), port);
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             isRunning = true;
