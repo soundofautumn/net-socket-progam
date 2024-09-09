@@ -96,6 +96,7 @@ public class TCPClient implements Client {
             }
         });
         receiveThread.start();
+        processor.showUsage();
         while (isRunning) {
             process(processor);
         }

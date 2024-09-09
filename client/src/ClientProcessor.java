@@ -4,6 +4,8 @@
  */
 public interface ClientProcessor {
 
+    void showUsage();
+
     String send();
 
     void receive(String message);

@@ -16,7 +16,9 @@ public class UDPClient implements Client {
 
     private volatile boolean isRunning = false;
 
-    DatagramSocket socket;
+    private DatagramSocket socket;
+
+    private Thread receiveThread;
 
     @Override
     public void setAddress(String address) {
@@ -59,11 +61,6 @@ public class UDPClient implements Client {
             final byte[] sendBuffer = sendMsg.getBytes();
             final DatagramPacket sendPacket = new DatagramPacket(sendBuffer, sendBuffer.length, InetAddress.getByName(address), port);
             socket.send(sendPacket);
-            final byte[] receiveBuffer = new byte[1024];
-            final DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
-            socket.receive(receivePacket);
-            final String receiveMsg = new String(receivePacket.getData(), 0, receivePacket.getLength());
-            processor.receive(receiveMsg);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -71,6 +68,24 @@ public class UDPClient implements Client {
 
     @Override
     public void run(ClientProcessor processor) {
+        receiveThread = new Thread(() -> {
+            while (isRunning) {
+                try {
+                    final byte[] receiveBuffer = new byte[1024];
+                    final DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
+                    socket.receive(receivePacket);
+                    final String receiveMsg = new String(receivePacket.getData(), 0, receivePacket.getLength());
+                    processor.receive(receiveMsg);
+                } catch (IOException e) {
+                    if (!isRunning) {
+                        return;
+                    }
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        receiveThread.start();
+        processor.showUsage();
         while (isRunning) {
             process(processor);
         }
