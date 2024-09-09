@@ -71,10 +71,11 @@ public class UDPServer extends AbstractServer {
                 .forEach(address -> {
                     final DatagramPacket sendPacket = new DatagramPacket(sendBuffer, sendBuffer.length, address);
                     try {
-                        System.out.println(client + " <- " + message);
+                        System.out.println(address + " <- " + message);
                         socket.send(sendPacket);
                     } catch (IOException e) {
-                        throw new RuntimeException(e);
+                        System.err.println("Failed to broadcast message to " + socket.getRemoteSocketAddress().toString());
+                        return;
                     }
                 });
     }
