@@ -1,4 +1,5 @@
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -8,15 +9,13 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class DefaultServerProcessor implements ServerProcessor {
 
-    private static final Map<String, String> userMap;
+    private static final Map<String, String> userMap = new ConcurrentHashMap<>();
 
     private static final Map<String, String> onlineClients = new ConcurrentHashMap<>();
 
     static {
-        userMap = Map.of(
-                "admin", "admin",
-                "user", "user"
-        );
+        userMap.put("admin", "admin");
+        userMap.put("user", "user");
     }
 
     @Override
@@ -37,8 +36,19 @@ public class DefaultServerProcessor implements ServerProcessor {
             } else {
                 return "login failed";
             }
-        }
-        if (message.startsWith("echo")) {
+        } else if (message.startsWith("register")) {
+            String[] split = message.split(" ");
+            if (split.length != 3) {
+                return "register failed";
+            }
+            String username = split[1];
+            String password = split[2];
+            if (userMap.containsKey(username)) {
+                return "register failed";
+            }
+            userMap.put(username, password);
+            return "register success";
+        } else if (message.startsWith("echo")) {
             String[] split = message.split(" ");
             if (split.length != 3) {
                 return "unknown command";
