@@ -8,6 +8,10 @@ public class DefaultClientProcessor implements ClientProcessor {
 
     private final Scanner scanner = new Scanner(System.in);
 
+    private volatile boolean waitForResponse = false;
+
+    private final Object lock = new Object();
+
     @Override
     public void showUsage() {
         System.out.println("Usage:");
@@ -40,12 +44,27 @@ public class DefaultClientProcessor implements ClientProcessor {
         return null;
     }
 
+    private void waitUtilResponse() {
+        if (!waitForResponse) {
+            return;
+        }
+        synchronized (lock) {
+            try {
+                lock.wait();
+            } catch (InterruptedException e) {
+                return;
+            }
+        }
+    }
+
     @Override
     public String send() {
+        waitUtilResponse();
         while (true) {
-            System.out.print(">");
+            System.out.print("> ");
             final String commandStr = scanner.nextLine();
             final String result = processCommand(commandStr);
+            waitForResponse = true;
             if (result != null) {
                 return result;
             }
@@ -54,6 +73,12 @@ public class DefaultClientProcessor implements ClientProcessor {
 
     @Override
     public void receive(String message) {
+        if (waitForResponse) {
+            synchronized (lock) {
+                lock.notify();
+                waitForResponse = false;
+            }
+        }
         if (!message.startsWith("unknown command")) {
             System.out.println(message);
         }
