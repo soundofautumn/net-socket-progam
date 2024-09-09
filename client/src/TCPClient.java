@@ -20,6 +20,8 @@ public class TCPClient implements Client {
 
     private BufferedWriter writer;
 
+    private Thread receiveThread;
+
     @Override
     public void setAddress(String address) {
         this.address = address;
@@ -64,12 +66,6 @@ public class TCPClient implements Client {
             writer.write(sendMsg);
             writer.newLine();
             writer.flush();
-            final String receiveMsg = reader.readLine();
-            if (receiveMsg == null) {
-                isRunning = false;
-                return;
-            }
-            processor.receive(receiveMsg);
         } catch (IOException e) {
             if (socket.isClosed()) {
                 isRunning = false;
@@ -81,6 +77,25 @@ public class TCPClient implements Client {
 
     @Override
     public void run(ClientProcessor processor) {
+        receiveThread = new Thread(() -> {
+            while (isRunning) {
+                try {
+                    final String receiveMsg = reader.readLine();
+                    if (receiveMsg == null) {
+                        isRunning = false;
+                        break;
+                    }
+                    processor.receive(receiveMsg);
+                } catch (IOException e) {
+                    if (socket.isClosed()) {
+                        isRunning = false;
+                        break;
+                    }
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        receiveThread.start();
         while (isRunning) {
             process(processor);
         }

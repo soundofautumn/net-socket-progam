@@ -14,35 +14,36 @@ public class DefaultClientProcessor implements ClientProcessor {
 
     @Override
     public String send() {
-        if (!isLogin) {
-            System.out.println("1. login");
-            System.out.println("2. register");
-            System.out.println("Please input your choice:");
-            final int command = scanner.nextInt();
-            scanner.nextLine();
-            if (command == 1) {
-                System.out.println("Please input username:");
-                String username = scanner.nextLine();
-                this.username = username;
-                System.out.println("Please input password:");
-                String password = scanner.nextLine();
-                return "login " + username + " " + password;
-            } else if (command == 2) {
-                System.out.println("Please input username:");
-                String username = scanner.nextLine();
-                System.out.println("Please input password:");
-                String password = scanner.nextLine();
-                return "register " + username + " " + password;
-            } else {
-                return "unknown command";
+        System.out.println("1. login");
+        System.out.println("2. register");
+        System.out.println("3. echo");
+        System.out.println("Please input your choice:");
+        final int command = scanner.nextInt();
+        scanner.nextLine();
+        if (command == 1) {
+            System.out.println("Please input username:");
+            String username = scanner.nextLine();
+            this.username = username;
+            System.out.println("Please input password:");
+            String password = scanner.nextLine();
+            return "login " + username + " " + password;
+        } else if (command == 2) {
+            System.out.println("Please input username:");
+            String username = scanner.nextLine();
+            System.out.println("Please input password:");
+            String password = scanner.nextLine();
+            return "register " + username + " " + password;
+        } else if (command == 3) {
+            System.out.println("Please input message:");
+            final String message = scanner.nextLine();
+            if (message.equals("exit")) {
+                return null;
             }
+            return "echo " + username + " " + message;
+        } else {
+            return "unknown command";
         }
-        System.out.println("Please input message:");
-        final String message = scanner.nextLine();
-        if (message.equals("exit")) {
-            return null;
-        }
-        return "echo " + username + " " + message;
+
     }
 
     @Override
