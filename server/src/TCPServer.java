@@ -117,6 +117,7 @@ public class TCPServer extends AbstractServer {
                 .filter(socket -> !socket.getRemoteSocketAddress().toString().equals(client))
                 .forEach(socket -> {
                     try {
+                        System.out.println(client + " <- " + message);
                         final BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
                         out.write(message);
                         out.newLine();

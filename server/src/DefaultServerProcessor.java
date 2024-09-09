@@ -1,5 +1,4 @@
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -68,7 +67,7 @@ public class DefaultServerProcessor implements ServerProcessor {
             if (!onlineClients.get(username).equals(client)) {
                 return "please login first";
             }
-            broadcast.broadcast(echo, username);
+            broadcast.broadcast(username + ": " + echo, username);
             return echo;
         }
         return "unknown command";

@@ -71,6 +71,7 @@ public class UDPServer extends AbstractServer {
                 .forEach(address -> {
                     final DatagramPacket sendPacket = new DatagramPacket(sendBuffer, sendBuffer.length, address);
                     try {
+                        System.out.println(client + " <- " + message);
                         socket.send(sendPacket);
                     } catch (IOException e) {
                         throw new RuntimeException(e);

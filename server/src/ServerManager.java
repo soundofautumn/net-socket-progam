@@ -11,7 +11,7 @@ public class ServerManager {
     private final ServerProcessor processor = new DefaultServerProcessor();
 
     public void run(String[] args) {
-        processor.setBroadcast(this::send);
+        processor.setBroadcast(this::broadcast);
         for (final Server server : servers) {
             server.parseArgs(args);
             server.setProcessor(processor);
@@ -21,7 +21,7 @@ public class ServerManager {
         }
     }
 
-    public void send(String message, String client) {
+    public void broadcast(String message, String client) {
         for (final Server server : servers) {
             server.broadcast(message, client);
         }
