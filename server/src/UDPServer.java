@@ -65,6 +65,7 @@ public class UDPServer extends AbstractServer {
 
     @Override
     public void broadcast(String message, String client) {
+        System.out.println("UDP Server received broadcast request from " + client + ": " + message);
         final byte[] sendBuffer = message.getBytes();
         clients.stream()
                 .filter(address -> !address.toString().equals(client))

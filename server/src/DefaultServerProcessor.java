@@ -67,7 +67,7 @@ public class DefaultServerProcessor implements ServerProcessor {
             if (!onlineClients.get(username).equals(client)) {
                 return "please login first";
             }
-            broadcast.broadcast(username + ": " + echo, username);
+            broadcast.broadcast(username + ": " + echo, client);
             return echo;
         }
         return "unknown command";

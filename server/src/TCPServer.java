@@ -113,6 +113,7 @@ public class TCPServer extends AbstractServer {
 
     @Override
     public void broadcast(String message, String client) {
+        System.out.println("TCP Server received broadcast request from " + client + ": " + message);
         clients.stream()
                 .filter(socket -> !socket.getRemoteSocketAddress().toString().equals(client))
                 .forEach(socket -> {
