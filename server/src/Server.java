@@ -18,6 +18,8 @@ public interface Server {
 
     void setProcessor(ServerProcessor processor);
 
+    void send(String message, String client);
+
     boolean start();
 
     boolean stop();

@@ -1,7 +1,5 @@
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.SocketException;
+import java.net.*;
 
 /**
  * @author SoundOfAutumn
@@ -55,5 +53,22 @@ public class UDPServer extends AbstractServer {
             throw new RuntimeException(e);
         }
 
+    }
+
+    @Override
+    public void send(String message, String client) {
+        final String[] address = client.split(":");
+        final byte[] sendBuffer = message.getBytes();
+        final DatagramPacket sendPacket;
+        try {
+            sendPacket = new DatagramPacket(sendBuffer, sendBuffer.length, InetAddress.getByName(address[0]), Integer.parseInt(address[1]));
+        } catch (UnknownHostException e) {
+            return;
+        }
+        try {
+            socket.send(sendPacket);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

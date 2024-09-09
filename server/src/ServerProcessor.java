@@ -6,6 +6,8 @@ import java.util.Collection;
  */
 public interface ServerProcessor {
 
+    void setBroadcast(Broadcast broadcast);
+
     String process(String client, String message);
 
     Collection<String> getOnlineClients();

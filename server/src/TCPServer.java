@@ -110,4 +110,21 @@ public class TCPServer extends AbstractServer {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public void send(String message, String client) {
+        clients.stream()
+                .filter(socket -> client.equals(socket.getInetAddress().getHostAddress() + ":" + socket.getPort()))
+                .findFirst()
+                .ifPresent(socket -> {
+                    try {
+                        final BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+                        out.write(message);
+                        out.newLine();
+                        out.flush();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+    }
 }

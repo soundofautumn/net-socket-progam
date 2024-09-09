@@ -9,6 +9,8 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class DefaultServerProcessor implements ServerProcessor {
 
+    private Broadcast broadcast;
+
     private static final Map<String, String> userMap = new ConcurrentHashMap<>();
 
     private static final Map<String, String> onlineClients = new ConcurrentHashMap<>();
@@ -16,6 +18,11 @@ public class DefaultServerProcessor implements ServerProcessor {
     static {
         userMap.put("admin", "admin");
         userMap.put("user", "user");
+    }
+
+    @Override
+    public void setBroadcast(Broadcast broadcast) {
+        this.broadcast = broadcast;
     }
 
     @Override
@@ -61,6 +68,7 @@ public class DefaultServerProcessor implements ServerProcessor {
             if (!onlineClients.get(username).equals(client)) {
                 return "please login first";
             }
+            broadcast.broadcast(echo, username);
             return echo;
         }
         return "unknown command";
