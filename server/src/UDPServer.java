@@ -1,5 +1,7 @@
 import java.io.IOException;
 import java.net.*;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @author SoundOfAutumn
@@ -8,6 +10,8 @@ import java.net.*;
 public class UDPServer extends AbstractServer {
 
     private DatagramSocket socket;
+
+    private List<SocketAddress> clients = new CopyOnWriteArrayList<>();
 
     @Override
     public boolean start() {
@@ -38,7 +42,11 @@ public class UDPServer extends AbstractServer {
             final byte[] receiveBuffer = new byte[1024];
             final DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
             socket.receive(receivePacket);
-            final String client = receivePacket.getAddress().getHostAddress() + ":" + receivePacket.getPort();
+            System.out.println("Received packet from " + receivePacket.getSocketAddress());
+            if (clients.stream().noneMatch(client -> client.equals(receivePacket.getSocketAddress()))) {
+                clients.add(receivePacket.getSocketAddress());
+            }
+            final String client = receivePacket.getSocketAddress().toString();
             final String receiveMsg = new String(receivePacket.getData(), 0, receivePacket.getLength());
             System.out.println(client + " -> " + receiveMsg);
             final String sendMsg = getProcessor().process(client, receiveMsg);
@@ -56,19 +64,17 @@ public class UDPServer extends AbstractServer {
     }
 
     @Override
-    public void send(String message, String client) {
-        final String[] address = client.split(":");
+    public void broadcast(String message, String client) {
         final byte[] sendBuffer = message.getBytes();
-        final DatagramPacket sendPacket;
-        try {
-            sendPacket = new DatagramPacket(sendBuffer, sendBuffer.length, InetAddress.getByName(address[0]), Integer.parseInt(address[1]));
-        } catch (UnknownHostException e) {
-            return;
-        }
-        try {
-            socket.send(sendPacket);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        clients.stream()
+                .filter(address -> !address.toString().equals(client))
+                .forEach(address -> {
+                    final DatagramPacket sendPacket = new DatagramPacket(sendBuffer, sendBuffer.length, address);
+                    try {
+                        socket.send(sendPacket);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
     }
 }

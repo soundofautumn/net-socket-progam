@@ -23,7 +23,7 @@ public class ServerManager {
 
     public void send(String message, String client) {
         for (final Server server : servers) {
-            server.send(message, client);
+            server.broadcast(message, client);
         }
     }
 

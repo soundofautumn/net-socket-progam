@@ -73,7 +73,7 @@ public class TCPServer extends AbstractServer {
     void accept() {
         try {
             final Socket socket = serverSocket.accept();
-            final String client = socket.getInetAddress().getHostAddress() + ":" + socket.getPort();
+            final String client = socket.getRemoteSocketAddress().toString();
             clients.add(socket);
             System.out.println("TCP Client connected: " + client);
             executor.execute(() -> {
@@ -112,11 +112,10 @@ public class TCPServer extends AbstractServer {
     }
 
     @Override
-    public void send(String message, String client) {
+    public void broadcast(String message, String client) {
         clients.stream()
-                .filter(socket -> client.equals(socket.getInetAddress().getHostAddress() + ":" + socket.getPort()))
-                .findFirst()
-                .ifPresent(socket -> {
+                .filter(socket -> !socket.getRemoteSocketAddress().toString().equals(client))
+                .forEach(socket -> {
                     try {
                         final BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
                         out.write(message);
