@@ -12,6 +12,10 @@ public class DefaultClientProcessor implements ClientProcessor {
 
     private final Object lock = new Object();
 
+    private String username;
+
+    private boolean isLogin = false;
+
     @Override
     public void showUsage() {
         System.out.println("Usage:");
@@ -27,6 +31,7 @@ public class DefaultClientProcessor implements ClientProcessor {
                 System.out.println("Usage: login <username> <password>");
                 return null;
             }
+            username = commandStrs[1];
             return "login " + commandStrs[1] + " " + commandStrs[2];
         } else if (commandStr.startsWith("register")) {
             if (commandStrs.length != 3) {
@@ -35,11 +40,15 @@ public class DefaultClientProcessor implements ClientProcessor {
             }
             return "register " + commandStrs[1] + " " + commandStrs[2];
         } else if (commandStr.startsWith("echo")) {
-            if (commandStrs.length < 3) {
-                System.out.println("Usage: echo <username> <message>");
+            if (!isLogin) {
+                System.out.println("Please login first.");
                 return null;
             }
-            return "echo " + commandStrs[1] + " " + commandStrs[2];
+            if (commandStrs.length < 2) {
+                System.out.println("Usage: echo <message>");
+                return null;
+            }
+            return "echo " +username + " " + commandStrs[2];
         }
         return null;
     }
@@ -78,6 +87,11 @@ public class DefaultClientProcessor implements ClientProcessor {
                 lock.notify();
                 waitForResponse = false;
             }
+        }
+        if (message.startsWith("login success")) {
+            isLogin = true;
+        } else if (message.startsWith("login failed")) {
+            isLogin = false;
         }
         if (!message.startsWith("unknown command")) {
             System.out.println(message);
