@@ -41,6 +41,7 @@ public class DefaultServerProcessor implements ServerProcessor {
                 return "already login";
             }
             if (userMap.containsKey(username) && userMap.get(username).equals(password)) {
+                onlineClients.values().remove(client);
                 onlineClients.put(username, client);
                 return "login success";
             } else {
