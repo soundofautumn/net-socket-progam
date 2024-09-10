@@ -12,6 +12,10 @@ public class DefaultServerProcessor implements ServerProcessor {
 
     private static final Map<String, String> userMap = new ConcurrentHashMap<>();
 
+    /**
+     * key: username
+     * value: client
+     */
     private static final Map<String, String> onlineClients = new ConcurrentHashMap<>();
 
     static {
@@ -79,7 +83,12 @@ public class DefaultServerProcessor implements ServerProcessor {
     }
 
     @Override
-    public boolean kick(String client) {
-        return onlineClients.remove(client) != null;
+    public boolean kick(String username) {
+        return onlineClients.remove(username) != null;
+    }
+
+    @Override
+    public boolean removeClient(String client) {
+        return onlineClients.values().remove(client);
     }
 }

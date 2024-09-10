@@ -21,7 +21,7 @@ public class DefaultClientProcessor implements ClientProcessor {
         System.out.println("Usage:");
         System.out.println("login <username> <password>");
         System.out.println("register <username> <password>");
-        System.out.println("echo <username> <message>");
+        System.out.println("echo <message>");
     }
 
     private String processCommand(String commandStr) {
@@ -70,7 +70,6 @@ public class DefaultClientProcessor implements ClientProcessor {
     public String send() {
         waitUtilResponse();
         while (true) {
-            System.out.print("> ");
             final String commandStr = scanner.nextLine();
             final String result = processCommand(commandStr);
             waitForResponse = true;

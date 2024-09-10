@@ -11,7 +11,7 @@ public class UDPServer extends AbstractServer {
 
     private DatagramSocket socket;
 
-    private List<SocketAddress> clients = new CopyOnWriteArrayList<>();
+    private final List<SocketAddress> clients = new CopyOnWriteArrayList<>();
 
     @Override
     public boolean start() {
@@ -76,6 +76,8 @@ public class UDPServer extends AbstractServer {
                         socket.send(sendPacket);
                     } catch (IOException e) {
                         System.err.println("Failed to broadcast message to " + socket.getRemoteSocketAddress().toString());
+                        clients.remove(address);
+                        getProcessor().removeClient(address.toString());
                         return;
                     }
                 });

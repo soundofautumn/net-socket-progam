@@ -94,6 +94,8 @@ public class TCPServer extends AbstractServer {
                     }
                     socket.close();
                     System.out.println("TCP Client disconnected: " + client);
+                    clients.remove(socket);
+                    getProcessor().removeClient(client);
                 } catch (IOException e) {
                     if (!isRunning()) {
                         return;

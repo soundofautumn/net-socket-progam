@@ -12,5 +12,7 @@ public interface ServerProcessor {
 
     Collection<String> getOnlineClients();
 
-    boolean kick(String client);
+    boolean kick(String username);
+
+    boolean removeClient(String client);
 }
