@@ -20,8 +20,6 @@ public class TCPClient implements Client {
 
     private BufferedWriter writer;
 
-    private Thread receiveThread;
-
     @Override
     public void setAddress(String address) {
         this.address = address;
@@ -77,7 +75,7 @@ public class TCPClient implements Client {
 
     @Override
     public void run(ClientProcessor processor) {
-        receiveThread = new Thread(() -> {
+        final Thread receiveThread = new Thread(() -> {
             while (isRunning) {
                 try {
                     final String receiveMsg = reader.readLine();

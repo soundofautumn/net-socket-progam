@@ -18,8 +18,6 @@ public class UDPClient implements Client {
 
     private DatagramSocket socket;
 
-    private Thread receiveThread;
-
     @Override
     public void setAddress(String address) {
         this.address = address;
@@ -68,7 +66,7 @@ public class UDPClient implements Client {
 
     @Override
     public void run(ClientProcessor processor) {
-        receiveThread = new Thread(() -> {
+        final Thread receiveThread = new Thread(() -> {
             while (isRunning) {
                 try {
                     final byte[] receiveBuffer = new byte[1024];
