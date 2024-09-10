@@ -48,7 +48,7 @@ public class DefaultClientProcessor implements ClientProcessor {
                 System.out.println("Usage: echo <message>");
                 return null;
             }
-            return "echo " +username + " " + commandStrs[2];
+            return "echo " + username + " " + commandStrs[1];
         }
         return null;
     }
