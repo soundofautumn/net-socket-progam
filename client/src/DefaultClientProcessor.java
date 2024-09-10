@@ -1,3 +1,4 @@
+import java.util.Objects;
 import java.util.Scanner;
 
 /**
@@ -22,6 +23,7 @@ public class DefaultClientProcessor implements ClientProcessor {
         System.out.println("login <username> <password>");
         System.out.println("register <username> <password>");
         System.out.println("echo <message>");
+        System.out.println("exit");
     }
 
     private String processCommand(String commandStr) {
@@ -49,6 +51,10 @@ public class DefaultClientProcessor implements ClientProcessor {
                 return null;
             }
             return "echo " + username + " " + commandStrs[1];
+        } else if (commandStr.startsWith("exit")) {
+            return "exit";
+        } else {
+            System.out.println("unknown command");
         }
         return null;
     }
@@ -72,6 +78,9 @@ public class DefaultClientProcessor implements ClientProcessor {
         while (true) {
             final String commandStr = scanner.nextLine();
             final String result = processCommand(commandStr);
+            if ("exit".equals(result)) {
+                return null;
+            }
             waitForResponse = true;
             if (result != null) {
                 return result;
