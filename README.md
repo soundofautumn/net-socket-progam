@@ -7,12 +7,13 @@
 - 指定服务器的ip地址和端口号
 - 实现TCP和UDP形式发送请求
 - 使用用户名和密码登录账户
-- 实现echo功能
+- 实现echo功能，发送的消息能被服务端返回
 
 ### 服务端
 
 - 指定服务器监听的端口
-- 实现以TCP和UDP形式监听请求，能同时与多个客户端进行通信
+- 实现同时以TCP和UDP形式监听请求，能同时与多个客户端进行通信
+- 实现广播功能，能将客户端发送的消息广播到所有在线客户端
 - 显示与客户端的通信情况
 - 查询在线用户
 - 使某个用户下线
@@ -51,9 +52,10 @@ port: 服务器端口号，默认8080
 
 ### 使用方法
 
-按提示输入即可
-
-输入 exit 来退出客户端
+登录：login <username> <password>
+注册：register <username> <password>
+发送消息：echo <message>
+退出：exit
 
 ## 服务端
 
@@ -69,11 +71,11 @@ port: 服务器监听的端口号，默认8080
 
 ### 使用方法
 
-输入 online 查看在线用户
+查看在线用户：online
 
-输入 kick + 用户名 踢用户下线
+踢用户下线：kick <client>
 
-输入 exit 来退出服务器
+退出：exit
 
 ## 项目结构
 
@@ -83,7 +85,7 @@ socket
 ├─ client -- 客户端源码
 │  └─ src
 │     ├─ Main.java -- 程序入口
-│ 		├─ Client.java
+│ 	  ├─ Client.java
 │     ├─ UDPClient.java
 │     ├─ TCPClient.java
 │     ├─ DefaultClientProcessor.java
@@ -101,3 +103,40 @@ socket
 
 ```
 
+## 核心代码
+
+### 客户端
+
+```java
+/**
+ * 客户端通信接口
+ * 负责连接服务器，发送消息，接收消息
+ * 分别实现TCP和UDP两种通信方式
+ */
+public interface Client;
+/**
+ * 客户端消息处理器接口
+ * 定义了客户端消息处理器的基本功能
+ * 通过加锁来保证先收到指令的结果后再发送指令
+ */
+public interface ClientProcessor;
+```
+
+### 服务端
+
+```java
+/**
+ * 服务端接口
+ * 负责启动服务端，停止服务端，广播消息
+ * TCP实现通过ServerSocket处理客户端连接，同时通过线程池处理多个客户端连接
+ * UDP实现通过DatagramSocket处理客户端连接
+ */
+public interface Server;
+/**
+ * 服务端处理器
+ * 负责处理客户端请求
+ * 服务端处理器应该是线程安全的
+ * 通过使用线程安全的集合类如ConcurrentHashMap来存储数据来保证线程安全
+ */
+public interface ServerProcessor;
+```

@@ -37,6 +37,7 @@ public class ServerManager {
     }
 
     public void commandLoop() {
+        System.out.println("Usage: online, kick <client>, exit");
         final Scanner scanner = new Scanner(System.in);
         while (true) {
             final String command = scanner.nextLine();
